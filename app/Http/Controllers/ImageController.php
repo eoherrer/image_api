@@ -21,9 +21,13 @@ class ImageController extends Controller
         try {
             $image = Image::where('docName', '=', $docName)->firstOrFail();
 
-            return response()->make($image->image, 200, array(
-                'Content-Type' => (new \finfo(FILEINFO_MIME_TYPE))->buffer($image->image)
-            ));
+			if(isset($image)){
+				$my_bytea = stream_get_contents($image->image);
+				
+				return response()->make($my_bytea, 200, array(
+					'Content-Type' => (new \finfo(FILEINFO_MIME))->buffer($my_bytea)));
+			}
+			return '';
         }catch (Exception $exception){
             return response()->view($exception->getMessage(), [], 500);
         }
